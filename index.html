@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>南山校安中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            background-image: linear-gradient(135deg, #e6f2ff 0%, #f0f7ff 100%);
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 87, 146, 0.12);
+            padding: 25px 20px;
+            border-top: 6px solid #005792;
+            max-width: 500px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e6f2ff;
+        }
+        
+        h1 {
+            color: #005792;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+        
+        .subtitle {
+            color: #4a90e2;
+            font-size: 1rem;
+            font-weight: normal;
+        }
+        
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8fbff;
+            border-radius: 10px;
+            padding: 16px 18px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border-left: 5px solid #4a90e2;
+            box-shadow: 0 3px 10px rgba(0, 87, 146, 0.08);
+            -webkit-tap-highlight-color: rgba(74, 144, 226, 0.1);
+        }
+        
+        .link-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0, 87, 146, 0.1);
+        }
+        
+        .link-number {
+            background-color: #4a90e2;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+        
+        .link-content {
+            flex-grow: 1;
+            min-width: 0; /* 防止內容溢出 */
+        }
+        
+        .link-title {
+            font-weight: bold;
+            color: #005792;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        
+        .link-url {
+            color: #666;
+            font-size: 0.8rem;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+        
+        .link-arrow {
+            color: #4a90e2;
+            font-size: 1.3rem;
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7a9bc2;
+            font-size: 0.8rem;
+            padding-top: 15px;
+            border-top: 1px solid #e6f2ff;
+        }
+        
+        .note {
+            background-color: #f0f9ff;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #005792;
+            font-size: 0.85rem;
+            border-left: 4px solid #4a90e2;
+            line-height: 1.5;
+        }
+        
+        /* 橫向模式調整 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+                max-width: 90%;
+            }
+            
+            .links-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 12px 15px;
+                height: 100%;
+            }
+            
+            .link-number {
+                margin-right: 0;
+                margin-bottom: 8px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .link-title {
+                font-size: 1rem;
+                margin-bottom: 5px;
+            }
+            
+            .link-url {
+                font-size: 0.75rem;
+            }
+            
+            .link-arrow {
+                align-self: flex-end;
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
+        
+        /* 較大手機或小平板 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                max-width: 450px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .link-item {
+                padding: 18px 20px;
+            }
+            
+            .link-title {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* 非常小的手機 */
+        @media (max-width: 360px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .link-item {
+                padding: 14px 16px;
+            }
+            
+            .link-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+                margin-right: 12px;
+            }
+            
+            .link-title {
+                font-size: 1rem;
+            }
+            
+            .link-url {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* 防止文字過大（iOS Safari） */
+        @media screen and (max-device-width: 480px) {
+            html {
+                -webkit-text-size-adjust: 100%;
+                text-size-adjust: 100%;
+            }
+        }
+        
+        /* 高對比度模式支持 */
+        @media (prefers-contrast: high) {
+            .link-item {
+                border: 2px solid #005792;
+            }
+            
+            .link-number {
+                border: 1px solid white;
+            }
+        }
+        
+        /* 深色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0a1929;
+                background-image: linear-gradient(135deg, #0a1929 0%, #132f4c 100%);
+                color: #e6f7ff;
+            }
+            
+            .container {
+                background-color: #1e3a5f;
+                border-top-color: #4a90e2;
+            }
+            
+            .link-item {
+                background-color: #2a4a7a;
+                color: #e6f7ff;
+                border-left-color: #4a90e2;
+            }
+            
+            .link-title {
+                color: #a3d5ff;
+            }
+            
+            .link-url {
+                color: #b3d9ff;
+            }
+            
+            .note {
+                background-color: #2a4a7a;
+                color: #a3d5ff;
+                border-left-color: #4a90e2;
+            }
+            
+            header {
+                border-bottom-color: #2a4a7a;
+            }
+            
+            footer {
+                border-top-color: #2a4a7a;
+                color: #a3d5ff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>南山校安中心</h1>
+            <p class="subtitle">學生事務系統連結</p>
+        </header>
+        
+        <div class="note">
+            請點擊下方連結進入相應系統。所有連結將在新視窗中開啟。
+        </div>
+        
+        <div class="links-container">
+            <a href="https://mptop2222.github.io/nansan1234/" target="_blank" class="link-item">
+                <div class="link-number">一</div>
+                <div class="link-content">
+                    <div class="link-title">假生銷通報名系統</div>
+                    <div class="link-url">mptop2222.github.io/nansan1234/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/rps/pages/p01.aspx" target="_blank" class="link-item">
+                <div class="link-number">二</div>
+                <div class="link-content">
+                    <div class="link-title">高中獎懲</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/rps/pages/p01.aspx</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/rps_jnr/" target="_blank" class="link-item">
+                <div class="link-number">三</div>
+                <div class="link-content">
+                    <div class="link-title">國中獎懲</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/rps_jnr/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/online/information.asp" target="_blank" class="link-item">
+                <div class="link-number">四</div>
+                <div class="link-content">
+                    <div class="link-title">高中查詢</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/online/information.asp</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/online_jnr/" target="_blank" class="link-item">
+                <div class="link-number">五</div>
+                <div class="link-content">
+                    <div class="link-title">國中查詢</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/online_jnr/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/auth" target="_blank" class="link-item">
+                <div class="link-number">六</div>
+                <div class="link-content">
+                    <div class="link-title">高中請假</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/auth</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/auth_jnr/Auth/Login?sys=Auth" target="_blank" class="link-item">
+                <div class="link-number">七</div>
+                <div class="link-content">
+                    <div class="link-title">國中請假</div>
+                    <div class="link-url">sr.nssh.ntpc.edu.tw/auth_jnr/Auth/Login?sys=Auth</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+        
+        <footer>
+            <p>南山校安中心 &copy; 2026</p>
+            <p>最後更新: 2026年1月16日</p>
+        </footer>
+    </div>
+
+    <script>
+        // 優化觸控體驗
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為連結添加觸覺反饋
+            const links = document.querySelectorAll('.link-item');
+            
+            links.forEach(link => {
+                link.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                }, {passive: true});
+                
+                link.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                }, {passive: true});
+                
+                link.addEventListener('touchcancel', function() {
+                    this.style.opacity = '1';
+                }, {passive: true});
+            });
+            
+            // 防止長按選單
+            document.addEventListener('contextmenu', function(e) {
+                if (e.target.nodeName === 'A') {
+                    e.preventDefault();
+                }
+            });
+            
+            // 檢測設備類型
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                document.body.classList.add('mobile-device');
+            }
+            
+            console.log("南山校安中心手機版已載入");
+        });
+    </script>
+</body>
+</html>
