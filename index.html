@@ -1,1259 +1,281 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>南山假日銷過報名系統</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"/>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-    body {
-        background-color: #f8f9fa;
-        padding-top: 20px;
-    }
-    .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-    }
-    .form-label {
-        font-weight: 500;
-    }
-
-    #previewContent, #queryResults, #registeredDatesContent, #queryRegistrationResults {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 5px;
-    }
-    .header {
-        background-color: #343a40;
-        color: white;
-        padding: 15px 0;
-        margin-bottom: 30px;
-        border-radius: 5px;
-    }
-    .footer {
-        margin-top: 30px;
-        padding: 15px 0;
-        text-align: center;
-        color: #6c757d;
-    }
-    .loading-spinner {
-        display: inline-block;
-        width: 1rem;
-        height: 1rem;
-        vertical-align: middle;
-        border: 0.15em solid currentColor;
-        border-right-color: transparent;
-        border-radius: 50%;
-        animation: spinner-border .75s linear infinite;
-    }
-    @keyframes spinner-border {
-        to { transform: rotate(360deg); }
-    }
-    .admin-section {
-        margin-top: 30px;
-        border-top: 1px solid #dee2e6;
-        padding-top: 20px;
-    }
-    .error-details {
-        font-size: 0.8em;
-        color: #6c757d;
-        margin-top: 10px;
-    }
-    #registeredDatesSection .list-group-item, .registration-item {
-        padding: 12px 15px;
-    }
-    #registeredDatesSection small {
-        font-size: 0.8em;
-    }
-    #queryRegistrationResults {
-        max-height: 300px;
-        overflow-y: auto;
-        margin-top: 15px;
-    }
-    .registration-item {
-        border-bottom: 1px solid #eee;
-    }
-    .registration-item:last-child {
-        border-bottom: none;
-    } 
-    
-    /* 列印樣式 */
-    @media print {
-        body * {
-            visibility: hidden;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南山校安中心</title>
+    <style>
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
         }
-        body.print-list #printListContent {
-            visibility: visible;
-            display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: auto;
-            background: white;
-            margin: 0;
-            padding: 15px;
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            background-image: linear-gradient(135deg, #e6f2ff 0%, #f0f7ff 100%);
+            min-height: 100vh;
         }
-        body.print-list #printListContent * {
-            visibility: visible;
-        }
-        .no-print {
-            display: none !important;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        th, td {
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-        h2, h4 {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            page-break-after: avoid;
-        }
-        table {
-            page-break-inside: auto;
-        }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        .attendance-checkbox {
-            width: 20px;
-            height: 20px;
+        
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            display: block;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 87, 146, 0.15);
+            padding: 40px;
+            border-top: 8px solid #005792;
         }
-        .attendance-label {
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e6f2ff;
+        }
+        
+        h1 {
+            color: #005792;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: #4a90e2;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8fbff;
+            border-radius: 10px;
+            padding: 18px 25px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border-left: 5px solid #4a90e2;
+            box-shadow: 0 3px 10px rgba(0, 87, 146, 0.08);
+        }
+        
+        .link-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 87, 146, 0.15);
+            background-color: #edf5ff;
+            border-left-color: #005792;
+        }
+        
+        .link-number {
+            background-color: #4a90e2;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+            font-size: 1.1rem;
         }
-    }
-</style>
+        
+        .link-content {
+            flex-grow: 1;
+        }
+        
+        .link-title {
+            font-weight: bold;
+            color: #005792;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .link-url {
+            color: #666;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .link-arrow {
+            color: #4a90e2;
+            font-size: 1.5rem;
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .link-item:hover .link-arrow {
+            transform: translateX(5px);
+            color: #005792;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7a9bc2;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #e6f2ff;
+        }
+        
+        .note {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            color: #005792;
+            font-size: 0.95rem;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .link-item {
+                padding: 15px 20px;
+            }
+            
+            .link-title {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .link-number {
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            .link-arrow {
+                align-self: flex-end;
+                margin-top: 10px;
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-
-<ul class="nav nav-tabs mb-4 sticky-top bg-white pt-3" id="mainTabs">
-<li class="nav-item">
-<button class="nav-link active" data-target="#tabStudent">報名表單</button>
-</li>
-<li class="nav-item">
-<button class="nav-link" data-target="#tabAdmin" onclick="showLoginModal(); return false;">管理員</button>
-</li>
-<li class="nav-item ms-auto" id="logoutTab" style="display: none;">
-<button class="nav-link text-danger" onclick="logout()">登出</button>
-</li>
-</ul>
-<div class="header text-center">
-<h1>南山假日銷過報名系統</h1>
-</div>
-<div class="tab-main" id="tabStudent"><div class="card mb-4">
-<div class="card-header bg-primary text-white">
-<h5 class="mb-0">報名表單</h5>
-</div>
-<div class="card-body">
-<form id="registrationForm">
-<div class="row mb-3">
-<div class="col-md-6">
-<label class="form-label" for="studentId">學號</label>
-<div class="input-group">
-<input class="form-control" id="studentId" placeholder="請輸入學號" required type="text"/>
-</div>
-<div class="mt-2" id="studentInfo" style="min-height: 70px;"></div>
-</div>
-</div>
-<div class="row mb-3">
-<div class="col-md-6">
-<label class="form-label" for="activityDate">實施日期</label>
-<select class="form-select" id="activityDate" required="">
-<option value="">請選擇日期</option>
-</select>
-<div class="mt-2 text-muted" id="dateInfo"></div>
-</div>
-<div class="col-md-6">
-<label class="form-label" for="activityHours">實施時數</label>
-<select class="form-select" id="activityHours" required="">
-<option value="">請選擇時數</option>
-<option value="2">2小時</option>
-<option value="4">4小時</option>
-</select>
-</div>
-</div>
-<div class="row mb-4">
-<div class="col-md-6">
-<label class="form-label" for="activityType">類別</label>
-<select class="form-select" id="activityType" required="">
-<option value="">請選擇類別</option>
-<option value="銷過">銷過</option>
-<option value="假日生活輔導">假日生活輔導</option>
-</select>
-</div>
-</div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-<button class="btn btn-primary me-md-2" id="previewBtn" type="button">
-<i class="bi bi-eye-fill"></i> 預覽
-</button>
-<button class="btn btn-secondary" type="reset">清除</button>
-</div>
-</form>
-</div>
-</div>
-
-<div class="card mb-4" id="queryRegistrationSection">
-<div class="card-header bg-info text-white">
-<h5 class="mb-0">查詢學號報名記錄</h5>
-</div>
-<div class="card-body">
-<div class="input-group">
-<input type="text" class="form-control" id="queryRegistrationId" placeholder="請輸入學號">
-<button class="btn btn-primary" type="button" id="queryRegistrationBtn">
-<i class="bi bi-search"></i> 查詢
-</button>
-</div>
-<div id="queryRegistrationResults" style="display: none;">
-</div>
-</div>
-</div>
-
-<div class="card mt-4" id="registeredDatesSection" style="display: none;">
-<div class="card-header bg-info text-white">
-<h5 class="mb-0">已報名記錄</h5>
-</div>
-<div class="card-body">
-<div id="registeredDatesContent"></div>
-</div>
-</div>
-
-<div class="card" id="previewSection" style="display: none;">
-<div class="card-header bg-success text-white">
-<h5 class="mb-0">報名預覽</h5>
-</div>
-<div class="card-body">
-<div id="previewContent"></div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-<button class="btn btn-success me-md-2" id="confirmBtn" type="button">
-<i class="bi bi-check-circle-fill"></i> 確認提交
-</button>
-<button class="btn btn-warning me-md-2" id="editBtn" type="button">
-<i class="bi bi-pencil-fill"></i> 修改資料
-</button>
-</div>
-</div>
-</div></div>
-
-<div class="tab-main" id="tabAdmin" style="display: none;">
-<div class="card mb-4">
-<div class="card-header bg-info text-white">
-<h5 class="mb-0">管理實施日期</h5>
-</div>
-<div class="card-body">
-<div class="input-group mb-3">
-<input class="form-control" id="newDateInput" type="date"/>
-<button class="btn btn-success" id="addDateBtn">
-<i class="bi bi-plus-circle"></i> 新增日期
-</button>
-</div>
-<ul class="list-group" id="dateList"></ul>
-</div>
-</div>
-<div class="admin-section">
-<div class="card mb-4">
-<div class="card-header bg-secondary text-white">
-<h5 class="mb-0">管理員查詢</h5>
-</div>
-<div class="card-body">
-<div class="row mb-3">
-<div class="col-md-4">
-<label class="form-label" for="queryStudentId">學號</label>
-<input class="form-control" id="queryStudentId" placeholder="可選填學號" type="text"/>
-</div>
-<div class="col-md-4">
-<label class="form-label" for="queryDate">查詢日期</label>
-<select class="form-select" id="queryDate">
-<option value="">請選擇查詢日期</option>
-</select>
-</div>
-<div class="col-md-4 d-flex align-items-end">
-<button class="btn btn-primary" id="queryBtn" type="button">
-<i class="bi bi-search"></i> 查詢
-</button>
-<button class="btn btn-success ms-2" id="printListBtn" style="display: none;" type="button">
-<i class="bi bi-printer-fill"></i> 列印名單
-</button>
-</div>
-</div>
-<div id="queryResults"></div>
-</div>
-</div>
-</div></div>
-
-<div id="printListContent" style="display: none;">
-<div class="text-center mb-4">
-<h2>南山中學假日銷過報名名單</h2>
-<h4 id="printListDate"></h4>
-<p class="text-muted">列印時間: <span id="printListTime"></span></p>
-</div>
-<table class="table table-bordered" id="printListTable">
-<thead class="table-dark">
-<tr>
-<th>序號</th>
-<th>學號</th>
-<th>姓名</th>
-<th>班級</th>
-<th>時數</th>
-<th>類別</th>
-<th>點名</th>
-</tr>
-</thead>
-<tbody id="printListBody"></tbody>
-</table>
-<div class="text-end mt-4">
-<p>總人數: <span id="printTotalCount">0</span>人</p>
-</div>
-</div>
-
-<div class="footer">
-<p>南山中學 校安中心 © 2025</p>
-</div>
-</div>
-
-<div aria-hidden="true" aria-labelledby="loginModalLabel" class="modal fade" id="loginModal" tabindex="-1">
-<div class="modal-dialog">
-<div class="modal-content">
-<div class="modal-header bg-dark text-white">
-<h5 class="modal-title" id="loginModalLabel">管理員登入</h5>
-<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
-</div>
-<div class="modal-body">
-<div class="mb-3">
-<label class="form-label" for="adminUsername">帳號</label>
-<input class="form-control" id="adminUsername" placeholder="輸入管理員帳號" type="text"/>
-</div>
-<div class="mb-3">
-<label class="form-label" for="adminPassword">密碼</label>
-<input class="form-control" id="adminPassword" placeholder="輸入密碼" type="password"/>
-</div>
-<div class="text-danger" id="loginError" style="display: none;">帳號或密碼錯誤</div>
-</div>
-<div class="modal-footer">
-<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">取消</button>
-<button class="btn btn-primary" onclick="validateLogin()" type="button">登入</button>
-</div>
-</div>
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // 初始化 Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyAMlgRs8a0-eZSamx1-EF3y2obIAOLvaZI",
-        authDomain: "nanshan-student.firebaseapp.com",
-        databaseURL: "https://nanshan-student-default-rtdb.firebaseio.com",
-        projectId: "nanshan-student",
-        storageBucket: "nanshan-student.firebasestorage.app",
-        messagingSenderId: "879754099667",
-        appId: "1:879754099667:web:0c08805c2d918b8b41e4d26",
-        measurementId: "G-KTX7TH9ETW"
-    };
-
-    let db;
-    let availableDatesRef;
-    try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        availableDatesRef = db.collection("availableDates");
+    <div class="container">
+        <header>
+            <h1>南山校安中心</h1>
+            <p class="subtitle">學生事務系統連結</p>
+        </header>
         
-        db.collection('測試連線').doc('test').get()
-            .catch(error => {
-                console.error("Firestore 連線測試失敗:", error);
-                showConnectionError();
+        <div class="note">
+            請點擊下方連結進入相應系統。所有連結將在新視窗中開啟。
+        </div>
+        
+        <div class="links-container">
+            <a href="https://mptop2222.github.io/nansan1234/" target="_blank" class="link-item">
+                <div class="link-number">一</div>
+                <div class="link-content">
+                    <div class="link-title">假生銷通報名系統</div>
+                    <div class="link-url">https://mptop2222.github.io/nansan1234/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/rps/pages/p01.aspx" target="_blank" class="link-item">
+                <div class="link-number">二</div>
+                <div class="link-content">
+                    <div class="link-title">高中獎懲</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/rps/pages/p01.aspx</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/rps_jnr/" target="_blank" class="link-item">
+                <div class="link-number">三</div>
+                <div class="link-content">
+                    <div class="link-title">國中獎懲</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/rps_jnr/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/online/information.asp" target="_blank" class="link-item">
+                <div class="link-number">四</div>
+                <div class="link-content">
+                    <div class="link-title">高中查詢</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/online/information.asp</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/online_jnr/" target="_blank" class="link-item">
+                <div class="link-number">五</div>
+                <div class="link-content">
+                    <div class="link-title">國中查詢</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/online_jnr/</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/auth" target="_blank" class="link-item">
+                <div class="link-number">六</div>
+                <div class="link-content">
+                    <div class="link-title">高中請假</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/auth</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            
+            <a href="https://sr.nssh.ntpc.edu.tw/auth_jnr/Auth/Login?sys=Auth" target="_blank" class="link-item">
+                <div class="link-number">七</div>
+                <div class="link-content">
+                    <div class="link-title">國中請假</div>
+                    <div class="link-url">https://sr.nssh.ntpc.edu.tw/auth_jnr/Auth/Login?sys=Auth</div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+        
+        <footer>
+            <p>南山校安中心 &copy; 2026 | 最後更新: 2026年1月16日</p>
+            <p>如有任何問題，請聯繫校安中心管理員</p>
+        </footer>
+    </div>
+
+    <script>
+        // 添加點擊效果
+        document.querySelectorAll('.link-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 添加短暫的反饋效果
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
-    } catch (error) {
-        console.error("Firebase 初始化錯誤:", error);
-        showConnectionError();
-    }
-
-    function showConnectionError() {
-        const errorAlert = document.createElement('div');
-        errorAlert.className = 'alert alert-danger';
-        errorAlert.innerHTML = `
-            <strong>資料庫連線錯誤</strong> 
-            <div class="error-details">無法連接到資料庫服務，請檢查網路連線或聯繫管理員。</div>
-        `;
-        document.querySelector('.container').prepend(errorAlert);
-    }
-
-    let availableDates = [];
-
-    const elements = {
-        studentIdInput: document.getElementById('studentId'),
-        studentInfoDiv: document.getElementById('studentInfo'),
-        activityDateSelect: document.getElementById('activityDate'),
-        dateInfoDiv: document.getElementById('dateInfo'),
-        previewSection: document.getElementById('previewSection'),
-        previewContent: document.getElementById('previewContent'),
-        previewBtn: document.getElementById('previewBtn'),
-        confirmBtn: document.getElementById('confirmBtn'),
-        editBtn: document.getElementById('editBtn'),
-        queryStudentId: document.getElementById('queryStudentId'),
-        queryDate: document.getElementById('queryDate'),
-        queryBtn: document.getElementById('queryBtn'),
-        queryResults: document.getElementById('queryResults'),
-        printListBtn: document.getElementById('printListBtn'),
-        printListContent: document.getElementById('printListContent'),
-        printListDate: document.getElementById('printListDate'),
-        printListTime: document.getElementById('printListTime'),
-        printListBody: document.getElementById('printListBody'),
-        printTotalCount: document.getElementById('printTotalCount'),
-        newDateInput: document.getElementById('newDateInput'),
-        addDateBtn: document.getElementById('addDateBtn'),
-        dateList: document.getElementById('dateList'),
-        registeredDatesSection: document.getElementById('registeredDatesSection'),
-        registeredDatesContent: document.getElementById('registeredDatesContent'),
-        queryRegisteredBtn: document.getElementById('queryRegisteredBtn'),
-        queryRegistrationId: document.getElementById('queryRegistrationId'),
-        queryRegistrationBtn: document.getElementById('queryRegistrationBtn'),
-        queryRegistrationResults: document.getElementById('queryRegistrationResults')
-    };
-
-    let currentStudent = null;
-    let registrationData = null;
-    let queryResultData = [];
-
-    async function initDateOptions() {
-        try {
-            elements.activityDateSelect.innerHTML = '<option value="">請選擇日期</option>';
-            elements.queryDate.innerHTML = '<option value="">請選擇查詢日期</option>';
-            
-            const snapshot = await availableDatesRef.orderBy("date").get();
-            availableDates = snapshot.docs.map(doc => doc.data().date);
-            
-            availableDates.forEach(date => {
-                const option1 = document.createElement('option');
-                option1.value = date;
-                option1.textContent = date;
-                elements.activityDateSelect.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = date;
-                option2.textContent = date;
-                elements.queryDate.appendChild(option2);
-            });
-        } catch (error) {
-            console.error("初始化日期選項錯誤:", error);
-            Swal.fire('錯誤', '無法載入可用日期', 'error');
-        }
-    }
-
-    async function checkStudentId(studentId) {
-        try {
-            elements.studentInfoDiv.innerHTML = '<div class="text-muted"><span class="loading-spinner"></span> 查詢中...</div>';
-            
-            const docRef = db.collection('南山學生資料').doc(studentId);
-            const doc = await docRef.get();
-            
-            if (!doc.exists) {
-                elements.studentInfoDiv.innerHTML = '<div class="alert alert-danger">找不到此學號的學生資料</div>';
-                currentStudent = null;
-                return false;
-            }
-            
-            const data = doc.data();
-            currentStudent = {
-                id: studentId,
-                name: data['姓名'] || '未提供',
-                grade: data['年級'] || '未提供',
-                class: data['班級'] || '未提供'
-            };
-            
-            elements.studentInfoDiv.innerHTML = `
-                <div class="alert alert-success">
-                    <strong>姓名:</strong> ${currentStudent.name}<br>
-                    <strong>班級:</strong> ${currentStudent.grade}${currentStudent.class}
-                </div>
-            `;
-            
-            return true;
-        } catch (error) {
-            console.error("查詢學生資料錯誤:", error);
-            let errorMessage = '查詢學生資料時發生錯誤';
-            
-            if (error.code === 'permission-denied') {
-                errorMessage = '權限不足，無法查詢學生資料';
-            }
-            
-            elements.studentInfoDiv.innerHTML = `
-                <div class="alert alert-danger">
-                    ${errorMessage}
-                    <div class="error-details">錯誤代碼: ${error.code || '未知'}</div>
-                </div>
-            `;
-            return false;
-        }
-    }
-
-    async function queryRegisteredDates(studentId) {
-        try {
-            elements.registeredDatesContent.innerHTML = '<div class="text-center"><span class="loading-spinner"></span> 查詢中...</div>';
-            elements.registeredDatesSection.style.display = 'block';
-            
-            const snapshot = await db.collection('報名記錄')
-                .where('學號', '==', studentId)
-                .orderBy('實施日期')
-                .get();
-
-            if (snapshot.empty) {
-                elements.registeredDatesContent.innerHTML = 
-                    '<div class="alert alert-info">此學號尚未報名任何活動</div>';
-                return;
-            }
-
-            let html = '<ul class="list-group">';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const isExpired = new Date(data.實施日期) < new Date();
-                html += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="${isExpired ? 'text-decoration-line-through text-muted' : ''}">
-                            <strong>日期:</strong> ${data.實施日期} | 
-                            <strong>時數:</strong> ${data.實施時數}小時 | 
-                            <strong>類別:</strong> ${data.類別}
-                        </span>
-                        <small class="text-muted">
-                            ${data.報名時間?.toDate()?.toLocaleString('zh-TW') || '未記錄'}
-                        </small>
-                    </li>
-                `;
-            });
-            html += '</ul>';
-
-            elements.registeredDatesContent.innerHTML = html;
-        } catch (error) {
-            console.error("查詢報名記錄錯誤:", error);
-            elements.registeredDatesContent.innerHTML = `
-                <div class="alert alert-danger">
-                    查詢失敗: ${error.message || '未知錯誤'}
-                </div>
-            `;
-            elements.registeredDatesSection.style.display = 'block';
-        }
-    }
-
-    async function queryStudentRegistrations(studentId) {
-        try {
-            const resultsDiv = elements.queryRegistrationResults;
-            resultsDiv.innerHTML = '<div class="text-center py-3"><span class="loading-spinner"></span> 查詢中...</div>';
-            resultsDiv.style.display = 'block';
-            
-            const snapshot = await db.collection('報名記錄')
-                .where('學號', '==', studentId)
-                .orderBy('實施日期', 'desc')
-                .get();
-            
-            if (snapshot.empty) {
-                resultsDiv.innerHTML = '<div class="alert alert-info">此學號尚無任何報名記錄</div>';
-                return;
-            }
-            
-            let html = '<div class="list-group">';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const isExpired = new Date(data.實施日期) < new Date();
-                const registrationTime = data.報名時間?.toDate()?.toLocaleString('zh-TW') || '未記錄';
-                
-                html += `
-                    <div class="list-group-item registration-item">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong class="${isExpired ? 'expired-date' : ''}">${data.實施日期}</strong>
-                                <span class="badge bg-primary ms-2">${data.實施時數}小時</span>
-                                <span class="badge bg-secondary ms-1">${data.類別}</span>
-                            </div>
-                            <small class="text-muted">${registrationTime}</small>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            resultsDiv.innerHTML = html;
-        } catch (error) {
-            console.error("查詢報名記錄錯誤:", error);
-            elements.queryRegistrationResults.innerHTML = `
-                <div class="alert alert-danger">
-                    查詢失敗: ${error.message || '未知錯誤'}
-                </div>
-            `;
-        }
-    }
-
-    async function checkDuplicateRegistration(studentId, date) {
-        try {
-            const snapshot = await db.collection('報名記錄')
-                .where('學號', '==', studentId)
-                .where('實施日期', '==', date)
-                .get();
-            
-            return !snapshot.empty;
-        } catch (error) {
-            console.error("檢查重複報名錯誤:", error);
-            return false;
-        }
-    }
-
-    async function checkDateAvailability(date) {
-        try {
-            const snapshot = await db.collection('報名記錄')
-                .where('實施日期', '==', date)
-                .get();
-            
-            const count = snapshot.size;
-            const remaining = 50 - count;
-            
-            elements.dateInfoDiv.textContent = `已報名: ${count}人 / 剩餘名額: ${remaining}人`;
-            
-            if (count >= 50) {
-                elements.dateInfoDiv.innerHTML += '<br><span class="text-danger">此日期已額滿，請選擇其他日期</span>';
-                return false;
-            }
-            
-            return true;
-        } catch (error) {
-            console.error("檢查日期可用性錯誤:", error);
-            elements.dateInfoDiv.innerHTML = `
-                <div class="text-danger">
-                    無法取得報名資料
-                    <div class="error-details">${error.message || '未知錯誤'}</div>
-                </div>
-            `;
-            return false;
-        }
-    }
-
-    async function queryRegistrations(date, studentId = '') {
-        try {
-            elements.queryResults.innerHTML = '<div class="text-center"><span class="loading-spinner"></span> 查詢中...</div>';
-            elements.printListBtn.style.display = 'none';
-
-            let formattedDate = '';
-            if (date && !isNaN(new Date(date))) {
-                formattedDate = new Date(date).toISOString().split('T')[0];
-            } else if (date) {
-                throw new RangeError("Invalid time value");
-            }
-
-            let query = db.collection('報名記錄').orderBy('報名時間');
-
-            if (formattedDate) {
-                query = query.where('實施日期', '==', formattedDate);
-            }
-
-            if (studentId) {
-                query = query.where('學號', '==', studentId);
-            }
-
-            const snapshot = await query.get();
-
-            if (snapshot.empty) {
-                elements.queryResults.innerHTML = '<div class="alert alert-info">沒有找到符合條件的報名記錄</div>';
-                queryResultData = [];
-                return;
-            }
-
-            queryResultData = [];
-            let html = `
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>序號</th>
-                                <th>學號</th>
-                                <th>姓名</th>
-                                <th>班級</th>
-                                <th>實施日期</th>
-                                <th>時數</th>
-                                <th>類別</th>
-                                <th>報名時間</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            let index = 1;
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const registrationTime = data.報名時間 && data.報名時間.seconds ?
-                    new Date(data.報名時間.seconds * 1000).toLocaleString('zh-TW') :
-                    '未記錄';
-
-                queryResultData.push({
-                    id: data.學號 || '未提供',
-                    name: data.姓名 || '未提供',
-                    class: data.班級 || '未提供',
-                    date: data.實施日期 || '未提供',
-                    hours: data.實施時數 || '未提供',
-                    type: data.類別 || '未提供',
-                    time: registrationTime
-                });
-
-                html += `
-                    <tr>
-                        <td>${index}</td>
-                        <td>${data.學號 || '未提供'}</td>
-                        <td>${data.姓名 || '未提供'}</td>
-                        <td>${data.班級 || '未提供'}</td>
-                        <td>${data.實施日期 || '未提供'}</td>
-                        <td>${data.實施時數 || '0'}小時</td>
-                        <td>${data.類別 || '未指定'}</td>
-                        <td>${registrationTime}</td>
-                        <td><button class="btn btn-sm btn-danger" onclick="deleteRegistration('${doc.id}')">刪除</button></td>
-                    </tr>
-                `;
-                index++;
-            });
-
-            html += `
-                    </tbody>
-                </table>
-                <div class="alert alert-info mt-3">
-                    共找到 ${snapshot.size} 筆報名記錄
-                </div>
-            </div>
-            `;
-
-            elements.queryResults.innerHTML = html;
-            elements.printListBtn.style.display = 'inline-block';
-
-        } catch (error) {
-            console.error("查詢報名記錄錯誤:", error);
-            let errorMessage = '查詢報名記錄時發生錯誤';
-
-            if (error instanceof RangeError) {
-                errorMessage = '查詢日期格式不正確，請重新選擇';
-            } else if (error.code === 'permission-denied') {
-                errorMessage = '權限不足，無法查詢報名記錄';
-            } else if (error.code === 'invalid-argument') {
-                errorMessage = '查詢條件無效，請檢查日期格式';
-            }
-
-            elements.queryResults.innerHTML = `
-                <div class="alert alert-danger">
-                    ${errorMessage}
-                    <div class="error-details">錯誤訊息: ${error.message || '未知'}</div>
-                </div>
-            `;
-            queryResultData = [];
-            elements.printListBtn.style.display = 'none';
-        }
-    }
-
-    async function showPreview() {
-        const activityDate = elements.activityDateSelect.value;
-        const activityHours = document.getElementById('activityHours').value;
-        const activityType = document.getElementById('activityType').value;
-        
-        const isDuplicate = await checkDuplicateRegistration(currentStudent.id, activityDate);
-        if (isDuplicate) {
-            alert('您已經報名過此日期的活動，請選擇其他日期');
-            return;
-        }
-        
-        registrationData = {
-            studentId: currentStudent.id,
-            studentName: currentStudent.name,
-            studentClass: `${currentStudent.grade}${currentStudent.class}`,
-            activityDate: activityDate,
-            activityHours: activityHours,
-            activityType: activityType,
-            registrationTime: new Date().toLocaleString('zh-TW')
-        };
-        
-        elements.previewContent.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>學號:</strong> ${currentStudent.id}</p>
-                    <p><strong>姓名:</strong> ${currentStudent.name}</p>
-                    <p><strong>班級:</strong> ${currentStudent.grade}${currentStudent.class}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>實施日期:</strong> ${activityDate}</p>
-                    <p><strong>實施時數:</strong> ${activityHours}小時</p>
-                    <p><strong>類別:</strong> ${activityType}</p>
-                </div>
-            </div>
-            <div class="alert alert-info mt-3">
-                請確認以上資料無誤後再提交，提交後將無法修改。
-            </div>
-        `;
-        
-        elements.previewSection.style.display = 'block';
-        window.scrollTo({ top: elements.previewSection.offsetTop, behavior: 'smooth' });
-    }
-
-    function preparePrintListContent() {
-        if (queryResultData.length === 0) {
-            alert('沒有可列印的資料，請先查詢報名記錄');
-            return false;
-        }
-        
-        const sortedData = [...queryResultData].sort((a, b) => {
-            const typeComparison = a.type.localeCompare(b.type);
-            if (typeComparison !== 0) return typeComparison;
-            return a.id.localeCompare(b.id);
         });
         
-        elements.printListDate.textContent = elements.queryDate.value || '所有日期';
-        elements.printListTime.textContent = new Date().toLocaleString('zh-TW');
-        elements.printListBody.innerHTML = '';
-        
-        sortedData.forEach((item, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${item.id || '未提供'}</td>
-                <td>${item.name || '未提供'}</td>
-                <td>${item.class || '未提供'}</td>
-                <td>${item.hours || '0'}小時</td>
-                <td>${item.type || '未指定'}</td>
-                <td>
-                    <div class="attendance-label">
-                        <input type="checkbox" class="attendance-checkbox"> 到
-                        <input type="checkbox" class="attendance-checkbox"> 未到
-                    </div>
-                </td>
-            `;
-            elements.printListBody.appendChild(row);
-        });
-        
-        elements.printTotalCount.textContent = sortedData.length;
-        return true;
-    }
-
-    function printRegistrationList() {
-        if (!preparePrintListContent()) return;
-        
-        document.body.classList.add('print-list');
-        elements.printListContent.style.display = 'block';
-        
-        setTimeout(() => {
-            window.print();
-            
-            setTimeout(() => {
-                document.body.classList.remove('print-list');
-                elements.printListContent.style.display = 'none';
-            }, 500);
-        }, 100);
-    }
-
-    async function submitRegistration() {
-        const activityDate = elements.activityDateSelect.value;
-        const activityHours = document.getElementById('activityHours').value;
-        const activityType = document.getElementById('activityType').value;
-        
-        const isAvailable = await checkDateAvailability(activityDate);
-        if (!isAvailable) {
-            alert('此日期已額滿，請選擇其他日期');
-            return;
-        }
-        
-        const isDuplicate = await checkDuplicateRegistration(currentStudent.id, activityDate);
-        if (isDuplicate) {
-            alert('您已經報名過此日期的活動，請選擇其他日期');
-            return;
-        }
-        
-        try {
-            elements.confirmBtn.innerHTML = '<span class="loading-spinner"></span> 提交中...';
-            elements.confirmBtn.disabled = true;
-            
-            const now = new Date();
-            const registrationTime = firebase.firestore.Timestamp.fromDate(now);
-            
-            await db.collection('報名記錄').add({
-                學號: currentStudent.id,
-                班級: `${currentStudent.grade}${currentStudent.class}`,
-                姓名: currentStudent.name,
-                實施日期: activityDate,
-                實施時數: parseInt(activityHours),
-                類別: activityType,
-                報名時間: registrationTime,
-                狀態: '已報名'
-            });
-            
-            elements.confirmBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> 確認提交';
-            elements.confirmBtn.disabled = false;
-            
-            const successAlert = document.createElement('div');
-            successAlert.className = 'alert alert-success alert-dismissible fade show';
-            successAlert.innerHTML = `
-                <strong>報名成功！</strong> 您的假日銷過已成功報名。
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.querySelector('.container').prepend(successAlert);
-            
-            resetForm();
-        } catch (error) {
-            console.error("提交報名錯誤:", error);
-            elements.confirmBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> 確認提交';
-            elements.confirmBtn.disabled = false;
-            
-            let errorMessage = '報名失敗，請稍後再試';
-            if (error.code === 'permission-denied') {
-                errorMessage = '權限不足，無法提交報名';
-            }
-            
-            alert(errorMessage);
-        }
-    }
-
-    function resetForm() {
-        document.getElementById('registrationForm').reset();
-        elements.studentInfoDiv.innerHTML = '';
-        elements.dateInfoDiv.textContent = '';
-        elements.previewSection.style.display = 'none';
-        elements.registeredDatesSection.style.display = 'none';
-        currentStudent = null;
-    }
-
-    async function checkDateHasRegistrations(date) {
-        try {
-            const snapshot = await db.collection('報名記錄')
-                .where('實施日期', '==', date)
-                .get();
-            return !snapshot.empty;
-        } catch (error) {
-            console.error("檢查日期報名記錄錯誤:", error);
-            return false;
-        }
-    }
-
-    async function deleteDateRegistrations(date) {
-        try {
-            const snapshot = await db.collection('報名記錄')
-                .where('實施日期', '==', date)
-                .get();
-            
-            const batch = db.batch();
-            snapshot.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-            
-            await batch.commit();
-            return snapshot.size;
-        } catch (error) {
-            console.error("刪除日期報名記錄錯誤:", error);
-            throw error;
-        }
-    }
-
-    async function handleDateDeletion(dateToDelete) {
-        try {
-            const snapshot = await availableDatesRef.where("date", "==", dateToDelete).get();
-            if (snapshot.empty) {
-                Swal.fire('錯誤', '找不到要刪除的日期', 'error');
-                return;
-            }
-            
-            const hasRegistrations = await checkDateHasRegistrations(dateToDelete);
-            
-            if (hasRegistrations) {
-                const result = await Swal.fire({
-                    title: `日期「${dateToDelete}」已有報名記錄`,
-                    text: "您想要如何處理？",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '刪除日期及報名記錄',
-                    cancelButtonText: '僅刪除日期',
-                    showDenyButton: true,
-                    denyButtonText: '取消',
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6'
-                });
-                
-                if (result.isDenied) {
-                    return; 
-                }
-                
-                if (result.isConfirmed) {
-                    const deletedCount = await deleteDateRegistrations(dateToDelete);
-                    Swal.fire('刪除完成', `已刪除日期及 ${deletedCount} 筆相關報名記錄`, 'success');
-                }
-            } else {
-                await Swal.fire('刪除完成', '日期已刪除', 'success');
-            }
-            
-            const batch = db.batch();
-            snapshot.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-            await batch.commit();
-            
-            await initDateOptions();
-            refreshDateList();
-            
-        } catch (error) {
-            console.error("刪除日期錯誤:", error);
-            Swal.fire('錯誤', '刪除日期時發生錯誤', 'error');
-        }
-    }
-
-    async function refreshDateList() {
-        try {
-            elements.dateList.innerHTML = '';
-            
-            const snapshot = await availableDatesRef.orderBy("date").get();
-            
-            snapshot.forEach(doc => {
-                const date = doc.data().date;
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `
-                    <span>${date}</span>
-                    <button class="btn btn-sm btn-danger" data-date="${date}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-                elements.dateList.appendChild(li);
-            });
-        } catch (error) {
-            console.error("刷新日期列表錯誤:", error);
-            elements.dateList.innerHTML = '<li class="list-group-item text-danger">無法載入日期列表</li>';
-        }
-    }
-
-    async function addNewDate() {
-        const newDate = elements.newDateInput.value;
-        if (!newDate) {
-            Swal.fire('錯誤', '請選擇有效的日期', 'error');
-            return;
-        }
-        
-        try {
-            const snapshot = await availableDatesRef.where("date", "==", newDate).get();
-            if (!snapshot.empty) {
-                Swal.fire('錯誤', '此日期已存在', 'error');
-                return;
-            }
-            
-            await availableDatesRef.add({
-                date: newDate,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            elements.newDateInput.value = '';
-            await initDateOptions();
-            refreshDateList();
-            Swal.fire('成功', '日期已新增', 'success');
-        } catch (error) {
-            console.error("新增日期錯誤:", error);
-            Swal.fire('錯誤', '新增日期時發生錯誤', 'error');
-        }
-    }
-
-    async function deleteRegistration(docId) {
-        if (!confirm('確定要刪除此報名資料嗎？')) return;
-        try {
-            await db.collection('報名記錄').doc(docId).delete();
-            alert('刪除成功');
-            const studentId = elements.queryStudentId.value.trim();
-            const date = elements.queryDate.value;
-            queryRegistrations(date, studentId); 
-        } catch (error) {
-            console.error("刪除失敗", error);
-            alert("刪除失敗，請稍後再試");
-        }
-    }
-
-    function showLoginModal() {
-        const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-        modal.show();
-    }
-
-    function validateLogin() {
-        const username = document.getElementById('adminUsername').value.trim();
-        const password = document.getElementById('adminPassword').value.trim();
-        const errorDiv = document.getElementById('loginError');
-        
-        if (username === 'admin' && password === '1234') {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            modal.hide();
-            sessionStorage.setItem('adminLoggedIn', 'true');
-            document.querySelector('#tabAdmin').style.display = '';
-            document.querySelector('#tabStudent').style.display = 'none';
-            document.querySelectorAll('#mainTabs .nav-link').forEach(el => el.classList.remove('active'));
-            document.querySelector('#mainTabs .nav-link[data-target="#tabAdmin"]').classList.add('active');
-            document.getElementById('logoutTab').style.display = 'block';
-        } else {
-            errorDiv.style.display = 'block';
-        }
-    }
-
-    function logout() {
-        sessionStorage.removeItem('adminLoggedIn');
-        document.querySelector('#tabAdmin').style.display = 'none';
-        document.querySelector('#tabStudent').style.display = '';
-        document.querySelectorAll('#mainTabs .nav-link').forEach(el => el.classList.remove('active'));
-        document.querySelector('#mainTabs .nav-link[data-target="#tabStudent"]').classList.add('active');
-        document.getElementById('logoutTab').style.display = 'none';
-    }
-
-    // ★ 修復 2：加入 Enter 鍵監聽，且使用 setTimeout 延遲執行 blur，避免畫面跳動取消原生點擊
-    elements.studentIdInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            elements.studentIdInput.blur(); 
-        }
-    });
-
-    elements.studentIdInput.addEventListener('blur', () => {
-        // 使用 setTimeout 延遲執行，避免與下拉選單的點擊事件（及鍵盤收起時的畫面縮放）發生衝突
-        setTimeout(async () => {
-            if (elements.studentIdInput.value.trim() !== '') {
-                await checkStudentId(elements.studentIdInput.value.trim());
-            }
-        }, 300);
-    });
-
-    elements.activityDateSelect.addEventListener('change', async () => {
-        if (elements.activityDateSelect.value !== '') {
-            await checkDateAvailability(elements.activityDateSelect.value);
-        } else {
-            elements.dateInfoDiv.textContent = '';
-        }
-    });
-
-    elements.previewBtn.addEventListener('click', async () => {
-        if (!currentStudent) {
-            alert('請先輸入有效的學號');
-            return;
-        }
-        
-        const activityDate = elements.activityDateSelect.value;
-        const activityHours = document.getElementById('activityHours').value;
-        const activityType = document.getElementById('activityType').value;
-        
-        if (!activityDate || !activityHours || !activityType) {
-            alert('請填寫所有必填欄位');
-            return;
-        }
-        
-        const isAvailable = await checkDateAvailability(activityDate);
-        if (!isAvailable) {
-            alert('此日期已額滿，請選擇其他日期');
-            return;
-        }
-        
-        showPreview();
-    });
-
-    elements.confirmBtn.addEventListener('click', submitRegistration);
-    elements.editBtn.addEventListener('click', () => {
-        elements.previewSection.style.display = 'none';
-    });
-    elements.queryBtn.addEventListener('click', () => {
-        const studentId = elements.queryStudentId.value.trim();
-        const date = elements.queryDate.value;
-        
-        if (!date && !studentId) {
-            alert('請至少輸入一個查詢條件（學號或日期）');
-            return;
-        }
-        
-        queryRegistrations(date, studentId);
-    });
-    elements.printListBtn.addEventListener('click', printRegistrationList);
-    elements.addDateBtn.addEventListener('click', addNewDate);
-    elements.queryRegistrationBtn.addEventListener('click', async () => {
-        const studentId = elements.queryRegistrationId.value.trim();
-        if (!studentId) {
-            alert('請輸入學號');
-            return;
-        }
-        
-        const isValid = await checkStudentId(studentId);
-        if (!isValid) {
-            elements.queryRegistrationResults.innerHTML = 
-                '<div class="alert alert-danger">找不到此學號的學生資料</div>';
-            elements.queryRegistrationResults.style.display = 'block';
-            return;
-        }
-        
-        await queryStudentRegistrations(studentId);
-    });
-
-    elements.dateList.addEventListener('click', async (e) => {
-        if (e.target.closest('button')) {
-            const dateToDelete = e.target.closest('button').dataset.date;
-            
-            const confirmResult = await Swal.fire({
-                title: '確定要刪除此日期嗎？',
-                text: `您即將刪除日期: ${dateToDelete}`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: '確定刪除',
-                cancelButtonText: '取消'
-            });
-            
-            if (confirmResult.isConfirmed) {
-                await handleDateDeletion(dateToDelete);
-            }
-        }
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const tabs = document.querySelectorAll("#mainTabs .nav-link");
-        tabs.forEach(tab => {
-            tab.addEventListener("click", function (e) {
-                const target = this.getAttribute("data-target");
-                if (target === "#tabAdmin" && sessionStorage.getItem('adminLoggedIn') !== 'true') {
-                    e.preventDefault();
-                    showLoginModal();
-                    return;
-                }
-                tabs.forEach(t => t.classList.remove("active"));
-                document.querySelectorAll(".tab-main").forEach(sec => sec.style.display = "none");
-                this.classList.add("active");
-                const section = document.querySelector(target);
-                if (section) section.style.display = "";
-            });
-        });
-    });
-
-    let logoutTimeout = setTimeout(logout, 30 * 1000);
-    // ★ 修復 3：拔除 touchstart，避免干擾原生觸控
-    ['click', 'scroll', 'keyup'].forEach(evt => {
-        document.addEventListener(evt, () => {
-            clearTimeout(logoutTimeout);
-            logoutTimeout = setTimeout(logout, 30 * 1000);
-        }, { passive: true });
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-            document.getElementById('logoutTab').style.display = 'block';
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        initDateOptions();
-        refreshDateList();
-    });
-</script>
+        // 控制台提示
+        console.log("南山校安中心連結頁面已載入");
+        console.log("包含7個系統連結，點擊任何連結將在新視窗開啟");
+    </script>
 </body>
 </html>
